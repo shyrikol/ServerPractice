@@ -1,12 +1,5 @@
 package bsu.fpmi.chat.controller;
 
-import static bsu.fpmi.chat.util.MessageUtil.fromStringToJSON;
-import static bsu.fpmi.chat.util.MessageUtil.fromJsonToMessage;
-import static bsu.fpmi.chat.util.MessageUtil.TOKEN;
-import static bsu.fpmi.chat.util.MessageUtil.MESSAGES;
-import static bsu.fpmi.chat.util.MessageUtil.getIndex;
-import static bsu.fpmi.chat.util.MessageUtil.getToken;
-
 import bsu.fpmi.chat.model.Message;
 import bsu.fpmi.chat.storage.xml.StoreIntoXML;
 import bsu.fpmi.chat.util.ServletUtil;
@@ -23,9 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import static bsu.fpmi.chat.util.MessageUtil.*;
 
 
 @WebServlet("/WebChatApplication")
@@ -97,7 +93,39 @@ public class Server extends HttpServlet{
         }
     }
 
-
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        logger.info("doDelete");
+        String data = ServletUtil.getMessageBody(request);
+        logger.info("Request data : " + data);
+        Message message;
+        try {
+            JSONObject jsonObject = fromStringToJSON(data);
+            message = fromJsonToMessageWithId(jsonObject);
+            message.delete();
+            StoreIntoXML.updateData(message);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (ParseException e) {
+            logger.error(e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        catch (ParserConfigurationException e) {
+            logger.error(e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        catch (SAXException e) {
+            logger.error(e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        catch (TransformerException e) {
+            logger.error(e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        catch (XPathExpressionException e) {
+            logger.error(e);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        }
+    }
 
 
     @SuppressWarnings("unchecked")
@@ -113,4 +141,5 @@ public class Server extends HttpServlet{
             StoreIntoXML.createStorage();
         }
     }
+
 }
