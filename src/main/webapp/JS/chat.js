@@ -145,7 +145,13 @@ function onToggleItem(divItem) {
 		if(taskList[i].id != id){
 			continue;
 		}
-		changeDescription(taskList[i]);
+        if (taskList[i].user==user) {
+            changeDescription(taskList[i]);
+        }
+        else{
+            alert('You can delete only your own messages!');
+            return;
+        }
 		toggle(taskList[i], function() {
 			updateItem(divItem, taskList[i]);
 		});
@@ -194,7 +200,6 @@ function updateItem(divItem, task){
 }
 
 function changeDescription(task){
-	task.user = 'System';
 	task.message= 'Message was deleted';
 }
 
