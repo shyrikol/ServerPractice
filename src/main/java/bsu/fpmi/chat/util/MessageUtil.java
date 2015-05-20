@@ -14,6 +14,7 @@ public class MessageUtil {
     private static final String EN = "EN";
     private static final String USER = "user";
     private static final String MESSAGE = "message";
+    private static final String ID = "id";
 
     public static String getToken(int index) {
         Integer number = index * 8 + 11;
@@ -34,6 +35,16 @@ public class MessageUtil {
         String messageText = (String) json.get(MESSAGE);
         if (user != null && messageText != null){
             return new Message(messageText, user);
+        }
+        return null;
+    }
+
+    public static Message fromJsonToMessageWithId(JSONObject json){
+        String user = (String) json.get(USER);
+        String messageText = (String) json.get(MESSAGE);
+        String id = (String) json.get(ID);
+        if (user != null && messageText != null){
+            return new Message(messageText, user, Double.valueOf(id));
         }
         return null;
     }
